@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "cross-env DATABASE_URL=file:./test.db RUST_LOG=error prisma db push --skip-generate && cross-env DATABASE_URL=file:./test.db vitest run",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
+    "db:generate": "cross-env DATABASE_URL=file:./dev.db prisma generate",
+    "db:migrate": "cross-env DATABASE_URL=file:./dev.db prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {

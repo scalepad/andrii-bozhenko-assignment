@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs';
 import { PrismaClient, Role } from '@prisma/client';
 
+process.env.DATABASE_URL ??= 'file:./dev.db';
+
 const prisma = new PrismaClient();
 const passwordHash = await bcrypt.hash('password123', 12);
 const seller = await prisma.user.upsert({

@@ -15,11 +15,12 @@ Requires Node.js 20 or newer.
 
 ```bash
 npm install
-cp .env.example apps/api/.env
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
+
+Development defaults to `apps/api/prisma/dev.db`. Copy `.env.example` to `apps/api/.env` only when you need to override the database, port, origin, or session duration.
 
 Open `http://localhost:5173`. The seed creates:
 
