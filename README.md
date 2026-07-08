@@ -25,6 +25,7 @@ Development defaults to `apps/api/prisma/dev.db`. Copy `.env.example` to `apps/a
 Open `http://localhost:5173`. The seed creates:
 
 - `seller@example.com` / `password123`
+- `atelier@example.com` / `password123`
 - `buyer@example.com` / `password123`
 
 ## Commands
@@ -55,7 +56,7 @@ Listing attributes form a discriminated union of standard and custom attributes.
 - `GET /api/cart`, `POST /api/cart/items`, `PATCH|DELETE /api/cart/items/:id`
 - `POST /api/orders/checkout`, `GET /api/orders`
 
-Catalog filters include `search`, `minPrice`, `maxPrice`, `size`, `color`, `style`, `upperMaterial`, and arbitrary `attr.<key>` query parameters. Standard filters accept values from the shared enums. Prices in API requests and filters are cents.
+Catalog filters include `search`, `seller`, `minPrice`, `maxPrice`, `size`, `color`, `style`, `upperMaterial`, and arbitrary `attr.<key>` query parameters. Standard filters accept values from the shared enums. Prices in API requests and filters are cents.
 
 ## Scope and future work
 

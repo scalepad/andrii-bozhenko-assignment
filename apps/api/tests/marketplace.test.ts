@@ -74,9 +74,12 @@ describe('marketplace API', () => {
 
   it('searches attributes and completes checkout with server totals', async () => {
     const seller = request.agent(app);
-    await seller
-      .post('/api/auth/register')
-      .send({ name: 'Seller', email: 'seller@test.com', password: 'password123', role: 'SELLER' });
+    await seller.post('/api/auth/register').send({
+      name: 'Bluebird Studio',
+      email: 'seller@test.com',
+      password: 'password123',
+      role: 'SELLER'
+    });
     const created = await seller.post('/api/listings').send({
       title: 'Blue High Top',
       description: 'Hand painted blue canvas high tops.',
@@ -91,15 +94,44 @@ describe('marketplace API', () => {
         { kind: 'CUSTOM', key: 'Origin', value: 'Canada' }
       ]
     });
+    const competitor = await prisma.user.create({
+      data: {
+        name: 'Different Workshop',
+        email: 'competitor@test.com',
+        passwordHash: 'not-used-in-this-test',
+        role: 'SELLER'
+      }
+    });
+    await prisma.listing.create({
+      data: {
+        sellerId: competitor.id,
+        title: 'Another Blue High Top',
+        description: 'A competing shoe that matches the standard attributes.',
+        priceCents: 13000,
+        images: { create: [{ url: 'https://example.com/other.jpg' }] },
+        attributes: {
+          create: [
+            { kind: 'STANDARD', key: 'SIZE', value: '10' },
+            { kind: 'STANDARD', key: 'COLOR', value: 'Blue' },
+            { kind: 'STANDARD', key: 'STYLE', value: 'High Top' },
+            { kind: 'STANDARD', key: 'UPPER_MATERIAL', value: 'Canvas' },
+            { kind: 'CUSTOM', key: 'Technique', value: 'Hand painted' },
+            { kind: 'CUSTOM', key: 'Origin', value: 'Canada' }
+          ]
+        }
+      }
+    });
     const search = await request(app).get('/api/listings').query({
       style: 'High Top',
       color: 'Blue',
       size: '10',
       upperMaterial: 'Canvas',
+      seller: 'Bluebird',
       'attr.Technique': 'Hand',
       'attr.Origin': 'Canada'
     });
     expect(search.body.listings).toHaveLength(1);
+    expect(search.body.listings[0].seller.name).toBe('Bluebird Studio');
     const buyer = request.agent(app);
     await buyer
       .post('/api/auth/register')

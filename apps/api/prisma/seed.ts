@@ -15,6 +15,16 @@ const seller = await prisma.user.upsert({
     role: Role.SELLER
   }
 });
+const secondSeller = await prisma.user.upsert({
+  where: { email: 'atelier@example.com' },
+  update: {},
+  create: {
+    email: 'atelier@example.com',
+    name: 'Eastside Atelier',
+    passwordHash,
+    role: Role.SELLER
+  }
+});
 await prisma.user.upsert({
   where: { email: 'buyer@example.com' },
   update: {},
@@ -66,5 +76,59 @@ if (!(await prisma.listing.count({ where: { sellerId: seller.id } }))) {
     }
   });
 }
-console.log('Seeded buyer@example.com and seller@example.com (password: password123)');
+if (!(await prisma.listing.count({ where: { sellerId: secondSeller.id } }))) {
+  await prisma.listing.create({
+    data: {
+      sellerId: secondSeller.id,
+      title: 'Forest Suede Low Tops',
+      description: 'Deep green suede low tops with hand-stitched cream accents.',
+      priceCents: 21500,
+      images: {
+        create: [
+          {
+            url: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1200',
+            position: 0
+          }
+        ]
+      },
+      attributes: {
+        create: [
+          { kind: 'STANDARD', key: 'SIZE', value: '8.5' },
+          { kind: 'STANDARD', key: 'COLOR', value: 'Green' },
+          { kind: 'STANDARD', key: 'STYLE', value: 'Low Top' },
+          { kind: 'STANDARD', key: 'UPPER_MATERIAL', value: 'Suede' },
+          { kind: 'CUSTOM', key: 'Detail', value: 'Hand stitched' }
+        ]
+      }
+    }
+  });
+  await prisma.listing.create({
+    data: {
+      sellerId: secondSeller.id,
+      title: 'Cloud Knit Runner',
+      description: 'A lightweight white knit runner with a hand-dyed blue gradient sole.',
+      priceCents: 19800,
+      images: {
+        create: [
+          {
+            url: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=1200',
+            position: 0
+          }
+        ]
+      },
+      attributes: {
+        create: [
+          { kind: 'STANDARD', key: 'SIZE', value: '11' },
+          { kind: 'STANDARD', key: 'COLOR', value: 'White' },
+          { kind: 'STANDARD', key: 'STYLE', value: 'Runner' },
+          { kind: 'STANDARD', key: 'UPPER_MATERIAL', value: 'Knit' },
+          { kind: 'CUSTOM', key: 'Sole', value: 'Hand dyed gradient' }
+        ]
+      }
+    }
+  });
+}
+console.log(
+  'Seeded buyer@example.com, seller@example.com, and atelier@example.com (password: password123)'
+);
 await prisma.$disconnect();

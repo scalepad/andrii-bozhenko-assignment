@@ -48,7 +48,7 @@ export function AttributeFilter({
   );
 }
 
-type StandardFilter = 'price' | 'size' | 'color' | 'style' | 'upperMaterial';
+type StandardFilter = 'price' | 'seller' | 'size' | 'color' | 'style' | 'upperMaterial';
 interface CustomFilter {
   id: number;
   key: string;
@@ -57,6 +57,7 @@ interface CustomFilter {
 
 const filterLabels: Record<StandardFilter, string> = {
   price: 'Price',
+  seller: 'Seller',
   size: 'Size',
   color: 'Color',
   style: 'Style',
@@ -68,6 +69,7 @@ export function CatalogPage() {
   const [search, setSearch] = useState('');
   const [min, setMin] = useState('');
   const [max, setMax] = useState('');
+  const [seller, setSeller] = useState('');
   const [size, setSize] = useState('');
   const [color, setColor] = useState('');
   const [style, setStyle] = useState('');
@@ -86,6 +88,7 @@ export function CatalogPage() {
       if (search) params.set('search', search);
       if (min) params.set('minPrice', String(Math.round(Number(min) * 100)));
       if (max) params.set('maxPrice', String(Math.round(Number(max) * 100)));
+      if (seller) params.set('seller', seller);
       if (size) params.set('size', size);
       if (color) params.set('color', color);
       if (style) params.set('style', style);
@@ -115,7 +118,8 @@ export function CatalogPage() {
     if (filter === 'price') {
       setMin('');
       setMax('');
-    } else if (filter === 'size') setSize('');
+    } else if (filter === 'seller') setSeller('');
+    else if (filter === 'size') setSize('');
     else if (filter === 'color') setColor('');
     else if (filter === 'style') setStyle('');
     else setUpperMaterial('');
@@ -233,6 +237,22 @@ export function CatalogPage() {
                 <IconButton
                   aria-label="Remove size filter"
                   onClick={() => removeStandardFilter('size')}
+                >
+                  <Close />
+                </IconButton>
+              </Stack>
+            )}
+            {activeFilters.includes('seller') && (
+              <Stack direction="row" spacing={1} alignItems="center">
+                <TextField
+                  label="Seller name"
+                  value={seller}
+                  onChange={(event) => setSeller(event.target.value)}
+                  fullWidth
+                />
+                <IconButton
+                  aria-label="Remove seller filter"
+                  onClick={() => removeStandardFilter('seller')}
                 >
                   <Close />
                 </IconButton>

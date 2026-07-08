@@ -22,6 +22,7 @@ const nested = (input: ReturnType<typeof listingSchema.parse>) => ({
 
 listingsRouter.get('/', async (req, res) => {
   const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+  const seller = typeof req.query.seller === 'string' ? req.query.seller.trim() : '';
   const min = req.query.minPrice ? Number(req.query.minPrice) : undefined;
   const max = req.query.maxPrice ? Number(req.query.maxPrice) : undefined;
   const attributeFilters = Object.entries(req.query).flatMap(([key, value]) => {
@@ -47,6 +48,7 @@ listingsRouter.get('/', async (req, res) => {
     ...(search
       ? { OR: [{ title: { contains: search } }, { description: { contains: search } }] }
       : {}),
+    ...(seller ? { seller: { name: { contains: seller } } } : {}),
     ...(Number.isFinite(min) || Number.isFinite(max)
       ? {
           priceCents: {

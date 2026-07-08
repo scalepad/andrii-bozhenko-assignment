@@ -29,6 +29,7 @@ describe('catalog filters', () => {
     await waitFor(() => expect(fetch).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole('button', { name: 'Add filter' }));
+    expect(screen.getByRole('menuitem', { name: 'Seller' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('menuitem', { name: 'Size' }));
     expect(screen.getByRole('combobox', { name: 'Size' })).toBeInTheDocument();
 
