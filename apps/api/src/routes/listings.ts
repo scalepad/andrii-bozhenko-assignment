@@ -24,9 +24,13 @@ listingsRouter.get('/', async (req, res) => {
   const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
   const min = req.query.minPrice ? Number(req.query.minPrice) : undefined;
   const max = req.query.maxPrice ? Number(req.query.maxPrice) : undefined;
-  const attributeFilters = Object.entries(req.query).filter(
-    ([key, value]) => key.startsWith('attr.') && typeof value === 'string'
-  );
+  const attributeFilters = Object.entries(req.query).flatMap(([key, value]) => {
+    if (!key.startsWith('attr.')) return [];
+    const values = Array.isArray(value) ? value : [value];
+    return values
+      .filter((item): item is string => typeof item === 'string')
+      .map((item) => ({ key: key.slice(5), value: item }));
+  });
   const filters = listingFiltersSchema.parse({
     size: typeof req.query.size === 'string' ? req.query.size : undefined,
     color: typeof req.query.color === 'string' ? req.query.color : undefined,
@@ -52,9 +56,9 @@ listingsRouter.get('/', async (req, res) => {
         }
       : {}),
     AND: [
-      ...attributeFilters.map(([key, value]) => ({
+      ...attributeFilters.map(({ key, value }) => ({
         attributes: {
-          some: { kind: 'CUSTOM' as const, key: key.slice(5), value: { contains: value as string } }
+          some: { kind: 'CUSTOM' as const, key, value: { contains: value } }
         }
       })),
       ...standardFilters

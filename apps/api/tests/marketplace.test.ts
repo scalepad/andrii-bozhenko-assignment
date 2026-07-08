@@ -87,12 +87,18 @@ describe('marketplace API', () => {
         { kind: 'STANDARD', key: 'COLOR', value: 'Blue' },
         { kind: 'STANDARD', key: 'STYLE', value: 'High Top' },
         { kind: 'STANDARD', key: 'UPPER_MATERIAL', value: 'Canvas' },
-        { kind: 'CUSTOM', key: 'Technique', value: 'Hand painted' }
+        { kind: 'CUSTOM', key: 'Technique', value: 'Hand painted' },
+        { kind: 'CUSTOM', key: 'Origin', value: 'Canada' }
       ]
     });
-    const search = await request(app)
-      .get('/api/listings')
-      .query({ style: 'High Top', color: 'Blue', size: '10', upperMaterial: 'Canvas' });
+    const search = await request(app).get('/api/listings').query({
+      style: 'High Top',
+      color: 'Blue',
+      size: '10',
+      upperMaterial: 'Canvas',
+      'attr.Technique': 'Hand',
+      'attr.Origin': 'Canada'
+    });
     expect(search.body.listings).toHaveLength(1);
     const buyer = request.agent(app);
     await buyer
