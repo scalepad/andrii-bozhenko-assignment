@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  BUYER
+  SELLER
+}
+
+enum OrderStatus {
+  COMPLETED
+}
+
+enum AttributeKind {
+  STANDARD
+  CUSTOM
+}
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  name String
+  passwordHash String
+  role Role
+  sessions Session[]
+  listings Listing[]
+  cartItems CartItem[]
+  orders Order[]
+  createdAt DateTime @default(now())
+}
+model Session {
+  id String @id
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+model Listing {
+  id String @id @default(cuid())
+  sellerId String
+  seller User @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  title String
+  description String
+  priceCents Int
+  images ListingImage[]
+  attributes ListingAttribute[]
+  cartItems CartItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([sellerId])
+  @@index([title])
+}
+model ListingImage {
+  id String @id @default(cuid())
+  listingId String
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  url String
+  position Int @default(0)
+}
+model ListingAttribute {
+  id String @id @default(cuid())
+  listingId String
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  kind AttributeKind @default(CUSTOM)
+  key String
+  value String
+  @@index([key, value])
+}
+model CartItem {
+  id String @id @default(cuid())
+  buyerId String
+  buyer User @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  listingId String
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  quantity Int @default(1)
+  @@unique([buyerId, listingId])
+}
+model Order {
+  id String @id @default(cuid())
+  buyerId String
+  buyer User @relation(fields: [buyerId], references: [id])
+  totalCents Int
+  status OrderStatus @default(COMPLETED)
+  items OrderItem[]
+  createdAt DateTime @default(now())
+}
+model OrderItem {
+  id String @id @default(cuid())
+  orderId String
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  listingId String
+  title String
+  priceCents Int
+  quantity Int
+  imageUrl String?
+}

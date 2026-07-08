@@ -1,0 +1,29 @@
+{
+  "name": "custom-shoe-marketplace",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,magenta \"npm run dev -w @shoe/api\" \"npm run dev -w @shoe/web\"",
+    "build": "npm run build -w @shoe/shared && npm run build -w @shoe/api && npm run build -w @shoe/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test -w @shoe/api && npm run test -w @shoe/web",
+    "db:migrate": "npm run db:migrate -w @shoe/api",
+    "db:seed": "npm run db:seed -w @shoe/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "globals": "^16.2.0",
+    "prettier": "^3.5.3",
+    "typescript-eslint": "^8.34.0"
+  }
+}
